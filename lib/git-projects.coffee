@@ -48,6 +48,10 @@ module.exports =
       description: "Display the branch and a status icon in the list of projects"
       type: "boolean"
       default: true
+    useNameOfTheRepository:
+      title: "Use the name of the repository as the name of project"
+      type: "boolean"
+      default: false
 
 
   projects: null

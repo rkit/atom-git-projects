@@ -7,6 +7,8 @@ module.exports =
 class ProjectsListView extends SelectListView
   controller: null
   cachedViews: new Map
+  filterKey: 'title'
+  titleKey: 'title'
 
   activate: ->
     new ProjectsListView
@@ -15,8 +17,17 @@ class ProjectsListView extends SelectListView
     super
     @addClass('git-projects')
 
+  setTitleKey: (key) ->
+    @titleKey = key
+
+  getTitleKey: ->
+    @titleKey
+
+  setFilterKey: (key) ->
+    @filterKey = key
+
   getFilterKey: ->
-    'title'
+    @filterKey
 
   getFilterQuery: ->
     @filterEditorView.getText()
@@ -46,6 +57,13 @@ class ProjectsListView extends SelectListView
     @panel?.hide()
 
   show: ->
+    if atom.config.get('git-projects.useNameOfTheRepository')
+      @setTitleKey('repositoryName')
+      @setFilterKey('repositoryName')
+    else
+      @setTitleKey('title')
+      @setFilterKey('title')
+
     @panel ?= atom.workspace.addModalPanel(item: this)
     @loading.text "Looking for repositories ..."
     @loadingArea.show()
@@ -71,18 +89,20 @@ class ProjectsListView extends SelectListView
         return repo unless project?
         repo.branch = project.branch
         repo.dirty = project.dirty
+        repo.repositoryName = project.repositoryName
         repo.setStale(true)
         return repo
 
       @setItems(repos)
 
   viewForItem: (project) ->
+    titleKey = @getTitleKey()
     if cachedView = @cachedViews.get(project) then return cachedView
     view = $$ ->
       @li class: 'two-lines', =>
         @div class: 'status status-added'
         @div class: 'primary-line icon ' + project.icon, =>
-          @span project.title
+          @span project[titleKey]
         @div class: 'secondary-line no-icon', =>
           @span project.path
     if atom.config.get('git-projects.showGitInfo')

@@ -16,6 +16,7 @@ class Project
   # Properties
   dirty: null
   branch: null
+  repositoryName: null
 
   @deserialize: (instance) ->
     new ProjectDeserialized instance
@@ -31,6 +32,7 @@ class Project
     TaskPool.add task, @path, (data) =>
       @branch = data.branch
       @dirty = data.dirty
+      @repositoryName = data.repositoryName
       cb()
 
   hasGitInfo: ->
@@ -53,5 +55,6 @@ class ProjectDeserialized extends Project
     @title = instance.title
     @dirty = instance.dirty
     @branch = instance.branch
+    @repositoryName = instance.repositoryName
 
 module.exports = Project
