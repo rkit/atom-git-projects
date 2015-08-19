@@ -1,8 +1,14 @@
 git = require 'git-utils'
+_path = require 'path'
 
 readGitInfo = (path) ->
   repository = git.open path
-  [..., repositoryName] = repository.getConfigValue('remote.origin.url').split "/"
+  repositoryUrl = repository.getConfigValue('remote.origin.url')
+  if (repositoryUrl)
+    [..., repositoryName] = repositoryUrl.split "/"
+  else
+    repositoryName = _path.basename(path)
+
   result =
     branch: repository.getShortHead()
     dirty: Object.keys(repository.getStatus()).length != 0
