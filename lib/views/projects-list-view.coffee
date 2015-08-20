@@ -97,6 +97,9 @@ class ProjectsListView extends SelectListView
 
   viewForItem: (project) ->
     titleKey = @getTitleKey()
+    if atom.config.get('git-projects.useNameOfTheRepository') and project.repositoryName == undefined
+      titleKey = 'title'
+
     if cachedView = @cachedViews.get(project) then return cachedView
     view = $$ ->
       @li class: 'two-lines', =>
